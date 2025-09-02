@@ -1,14 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Posts</title>
-</head>
-<body>
-    <h1>Posts cadastrados</h1>
-    <ul>
-        {% for post in posts %}
-        <li>{{ post.autor }} - {{ post.mensagem }} - {{ post.criado_em }}</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Posts{% endblock title %}
+
+{% block content %}
+<h2 class="mb-4">Posts cadastrados</h2>
+
+<div class="row">
+    {% for post in posts %}
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.autor }}</h5>
+                <p class="card-text">{{ post.mensagem }}</p>
+                <small class="text-muted">{{ post.criado_em }}</small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Nenhum post encontrado.</p>
+    {% endfor %}
+</div>
+{% endblock content%}
