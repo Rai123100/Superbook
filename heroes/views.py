@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Hero
 from django.views.generic import ListView
@@ -17,6 +17,8 @@ class HeroListView(ListView):
     template_name = "heroes/lista_herois.html"
     context_object_name = "herois"
 
+
+
 # ---------Forms
 def contato_view(request):
     form = ContatoForm()  # formulário vazio
@@ -31,6 +33,7 @@ def contato_view(request):
     return render(request, "heroes/contato.html", {"form": form})
 
 
+# ----------------------------------------------------------------------Criar um heroi - com Modelform
 def criar_heroi(request):
     if request.method == "POST":
         form = HeroForm(request.POST)
@@ -41,4 +44,5 @@ def criar_heroi(request):
         form = HeroForm()
 
     return render(request, "heroes/form_heroi.html", {"form": form})
+
 
