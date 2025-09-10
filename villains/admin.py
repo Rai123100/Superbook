@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Hero
+from .models import Villain
 
 # Register your models here.
 
-@admin.register(Hero)
-class HeroAdmin(admin.ModelAdmin):
+@admin.register(Villain)
+class VillainAdmin(admin.ModelAdmin):
     list_display = ['codinome', 'nome_real', 'email_contato', 'poder_principal', 'cidade', 'criado_em']
     list_filter = ['cidade']
     search_fields = ['codinome', 'nome_real', 'cidade']

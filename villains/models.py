@@ -1,7 +1,9 @@
-
 from django.db import models
 
-class Hero(models.Model):
+
+# Create your models here.
+
+class Villain(models.Model):
     codinome = models.CharField(max_length=50, unique=True)
     nome_real = models.CharField(max_length=100, blank=True, null=True)
     email_contato = models.EmailField(null=True)
