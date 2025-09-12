@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Posts de {{ data.autor }}</h2><br>
+<p>{{ data.mensagem|linebreaksbr }}</p><br>
+{% endblock %}

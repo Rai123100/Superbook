@@ -3,21 +3,20 @@
 {% block title %}Lista de Posts{% endblock title %}
 
 {% block content %}
-<h2 class="mb-4">Posts cadastrados</h2>
-
-<div class="row">
-    {% for post in posts %}
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ post.autor }}</h5>
-                <p class="card-text">{{ post.mensagem }}</p>
-                <small class="text-muted">{{ post.criado_em }}</small>
+<div class="container mt-4">
+    <h2>Lista de Posts</h2>
+    <ul class="list-group">
+        {% for post in posts %}
+        <li class="list-group-item">
+            <strong>{{ post.autor.codinome }}</strong><br>
+            {{ post.mensagem|linebreaksbr }}<br>
+            <small class="text-muted">{{ post.criado_em }}</small>
+            <div class="mt-2">
+                <a href="{% url 'editar_post' post.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <a href="{% url 'excluir_post' post.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
             </div>
-        </div>
-    </div>
-    {% empty %}
-    <p>Nenhum post encontrado.</p>
-    {% endfor %}
+        </li>
+        {% endfor %}
+    </ul>
 </div>
-{% endblock content%}
+{% endblock %}
