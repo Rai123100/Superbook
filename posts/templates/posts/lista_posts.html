@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
-
-{% block title %}Lista de Posts{% endblock title %}
-
 {% block content %}
-<div class="container mt-4">
-    <h2>Lista de Posts</h2>
+  <div class="container mt-4">
+    <h2>Posts</h2>
+    <a href="{% url 'novo_post' %}" class="btn btn-success mb-3">Novo Post</a>
     <ul class="list-group">
-        {% for post in posts %}
+      {% for post in posts %}
+      
         <li class="list-group-item">
-            <strong>{{ post.autor.codinome }}</strong><br>
-            {{ post.mensagem|linebreaksbr }}<br>
-            <small class="text-muted">{{ post.criado_em }}</small>
-            <div class="mt-2">
-                <a href="{% url 'editar_post' post.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
-                <a href="{% url 'excluir_post' post.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
-            </div>
+ <!--LINK INSERIDO AQUI-->  <a href="{% url 'detalhe_post' post.pk %}" class="text-dark text-decoration-none"> 
+          <strong>{{ post.autor.codinome }}</strong><br>
+          {{ post.mensagem|linebreaksbr }} </a>
+          <div class="mt-2">
+            <a href="{% url 'editar_post' post.pk %}" class="btn btn-sm btn-outline-primary">Editar</a>
+            <a href="{% url 'excluir_post' post.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+          </div>
         </li>
-        {% endfor %}
+      {% endfor %}
     </ul>
-</div>
+  </div>
 {% endblock %}

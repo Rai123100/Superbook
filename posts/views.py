@@ -1,10 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from .models import Post
 from .forms import PostForm
-
+from comments.form import ComentarioForm
 # ----------------------------------------------------------------------Baseado em função
 # def lista_post(request): 
 #     posts = Post.objects.all()  # busca todos os posts do banco
@@ -49,10 +49,23 @@ class PostDeleteView(DeleteView):
     template_name = 'posts/confirmar_exclusao.html'
     success_url = reverse_lazy('lista_posts')
     
-def post_detail(request, id):
-    data = get_object_or_404(Post, pk=id)
 
-    context = {
-      "data":data
-    }
-    return render(request, "posts/view.html", context)
+def detalhe_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    comentarios = post.comentarios.all()
+
+    if request.method == 'POST':
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.post = post
+            comentario.save()
+            return redirect('detalhe_post', pk=post.pk)
+    else:
+        form = ComentarioForm()
+
+    return render(request, 'posts/detalhe_post.html', {
+        'post': post,
+        'comentarios': comentarios,
+        'form': form
+    })
