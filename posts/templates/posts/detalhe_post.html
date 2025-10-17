@@ -4,8 +4,25 @@
   <h2>Post de {{ post.autor.codinome }}</h2>
 <hr>
 <p>{{ post.mensagem|linebreaksbr }}</p>
+  <br>
   
-    <h4>Comentários:</h4>
+<div class="d-flex align-items-center gap-3 my-3">
+  <form action="{% url 'toggle_pow' post.pk %}" method="post" class="d-inline">
+    {% csrf_token %}
+    <button class="btn btn-sm btn-outline-secondary">💥 POW</button>
+  </form>
+  <span class="text-muted">{{ post.likes.count }} curtidas</span>
+</div>
+  <br>
+
+  <h5>Adicionar comentário:</h5>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+    <br><br>
+    <h5>Comentários:</h5>
     {% for comentario in comentarios %}
       <div class="mb-2">
         <p>{{ comentario.texto }}</p>
@@ -16,11 +33,6 @@
       <p>Seja o primeiro a comentar!</p>
     {% endfor %}
 
-    <h4>Adicionar comentário:</h4>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="btn btn-primary">Enviar</button>
-    </form>
+    
   </div>
 {% endblock %}

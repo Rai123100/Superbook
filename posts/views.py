@@ -1,58 +1,73 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from django.http import HttpResponse
-from .models import Post
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Post, Like
+from heroes.models import Hero
 from .forms import PostForm
-from comments.form import ComentarioForm
-# ----------------------------------------------------------------------Baseado em função
-# def lista_post(request): 
-#     posts = Post.objects.all()  # busca todos os posts do banco
-#     return render(request, "posts/lista_posts.html", {"posts": posts})
+from comments.forms import ComentarioForm
+from django.http import HttpResponseRedirect
 
-# def hello_posts(request):
-#     return HttpResponse("Bem-vindo ao módulo Posts!")
-    
-# ----------------------------------------------------------------------Criar um post - com Modelform
-# def criar_post(request):
-#     if request.method == "POST":
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('lista_posts')
-#     else:
-#         form = PostForm()
-
-#     return render(request, "posts/form_post.html", {"form": form})
-
-# ----------------------------------------------------------------------Criar um post - com GenericViews
-
-class PostCreateView(CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'posts/form_post.html'
-    success_url = reverse_lazy('lista_posts')
-
-class PostUpdateView(UpdateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'posts/form_post.html'
-    success_url = reverse_lazy('lista_posts')
-    
 class PostListView(ListView):
     model = Post
-    template_name = "posts/lista_posts.html"
-    context_object_name = "posts"
+    template_name = 'posts/lista_posts.html'
+    context_object_name = 'posts'
+    ordering = ['-criado_em']
 
-class PostDeleteView(DeleteView):
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/form_post.html'
+    success_url = reverse_lazy('lista_posts')
+
+    def form_valid(self, form):
+        try:
+            hero = self.request.user.hero
+        except Hero.DoesNotExist:
+            messages.error(self.request, "Crie seu perfil de herói antes de publicar.")
+            return redirect('criar_heroi')
+        form.instance.autor = hero
+        messages.success(self.request, "Post criado com sucesso.")
+        return super().form_valid(form)
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/form_post.html'
+    success_url = reverse_lazy('lista_posts')
+
+    def test_func(self):
+        obj = self.get_object()
+        try:
+            return self.request.user.is_authenticated and obj.autor == self.request.user.hero
+        except Hero.DoesNotExist:
+            return False
+
+    def handle_no_permission(self):
+        messages.error(self.request, "Você não tem permissão para editar este post.")
+        return redirect('lista_posts')
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'posts/confirmar_exclusao.html'
     success_url = reverse_lazy('lista_posts')
-    
+
+    def test_func(self):
+        obj = self.get_object()
+        try:
+            return self.request.user.is_authenticated and obj.autor == self.request.user.hero
+        except Hero.DoesNotExist:
+            return False
+
+    def handle_no_permission(self):
+        messages.error(self.request, "Você não tem permissão para excluir este post.")
+        return redirect('lista_posts')
 
 def detalhe_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    comentarios = post.comentarios.all()
+    comentarios = post.comentarios.all().order_by('criado_em') if hasattr(post, 'comentarios') else []
 
     if request.method == 'POST':
         form = ComentarioForm(request.POST)
@@ -60,6 +75,7 @@ def detalhe_post(request, pk):
             comentario = form.save(commit=False)
             comentario.post = post
             comentario.save()
+            messages.success(request, "Comentário adicionado.")
             return redirect('detalhe_post', pk=post.pk)
     else:
         form = ComentarioForm()
@@ -69,3 +85,20 @@ def detalhe_post(request, pk):
         'comentarios': comentarios,
         'form': form
     })
+
+# --------------------------------------------------------------------------------------------------
+
+@login_required
+def toggle_pow(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    hero = getattr(request.user, 'hero', None)
+    if not hero:
+        messages.error(request, "Crie seu herói antes de curtir.")
+        return redirect('criar_heroi')
+
+    like, created = Like.objects.get_or_create(post=post, heroi=hero)
+    if not created:
+        like.delete()
+
+    # Volta para a página anterior (ou lista como fallback)
+    return redirect(request.META.get('HTTP_REFERER', reverse('lista_posts')))
