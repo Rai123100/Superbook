@@ -5,7 +5,7 @@ from .models import Villain
 
 @admin.register(Villain)
 class VillainAdmin(admin.ModelAdmin):
-    list_display = ['codinome', 'nome_real', 'email_contato', 'poder_principal', 'cidade', 'criado_em']
+    list_display = ['codinome', 'nome_real', 'poder_principal', 'cidade', 'criado_em']
     list_filter = ['cidade']
     search_fields = ['codinome', 'nome_real', 'cidade']
     
