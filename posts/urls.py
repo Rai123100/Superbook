@@ -1,11 +1,7 @@
 from django.urls import path
-from . import views
-from .views import PostListView, PostCreateView, PostUpdateView, PostDeleteView, detalhe_post, toggle_pow
+from .views import PostCreateView, PostListView, PostUpdateView, PostDeleteView, detalhe_post, toggle_pow
 
 urlpatterns = [
-    # path('hello/', views.hello_posts, name='hello_post'),
-    # path('lista/', views.lista_post, name='lista_posts'), Baseado em Função - def
-    # path('novo/', criar_post, name='criar_post' ),
     path('novo/', PostCreateView.as_view(), name='novo_post'),
     path('', PostListView.as_view(), name='lista_posts'),
     path('<int:pk>/editar/', PostUpdateView.as_view(), name='editar_post'),

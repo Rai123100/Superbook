@@ -5,10 +5,10 @@ from .forms import ContatoForm
 from .forms import HeroForm
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 def lista_herois(request):
     herois = Hero.objects.all()
@@ -24,34 +24,14 @@ def lista_herois(request):
         {"herois": herois, "user_tem_heroi": user_tem_heroi},
     )
 
-# --------------------------------------------------------------------------------------------------
-
-def hello_heroes(request):
-    return HttpResponse("Bem-vindo ao módulo Heroes!")
-
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 class HeroListView(ListView):
     model = Hero
     template_name = "heroes/lista_herois.html"
     context_object_name = "herois"
 
-
-# ---------Forms
-def contato_view(request):
-    form = ContatoForm()  # formulário vazio
-
-    if request.method == "POST":
-        form = ContatoForm(request.POST)
-        if form.is_valid():
-            # Aqui você poderia enviar um e-mail ou salvar no banco
-            print(form.cleaned_data)
-            return render(request, "heroes/contato_sucesso.html")
-
-    return render(request, "heroes/contato.html", {"form": form})
-
-
-# ----------------------------------------------------------------------Criar um heroi - com Modelform
+# ----------------------------------------------------------------------------------------
 
 def contato_view(request):
     form = ContatoForm(request.POST or None)
@@ -61,7 +41,7 @@ def contato_view(request):
     
     return render(request, "heroes/contato.html", {"form": form})
 
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 @login_required
 def criar_heroi(request):
@@ -84,7 +64,7 @@ def criar_heroi(request):
 
     return render(request, "heroes/form_heroi.html", {"form": form})
 
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 @login_required
 def editar_heroi(request, pk):
@@ -105,7 +85,7 @@ def editar_heroi(request, pk):
 
     return render(request, "heroes/form_heroi.html", {"form": form})
 
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 @login_required
 def redirect_after_login(request):
