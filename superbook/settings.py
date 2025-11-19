@@ -70,6 +70,9 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://rai123100.pythonanywhere.com/accounts/google/login/callback/'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
